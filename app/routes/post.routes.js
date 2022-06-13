@@ -7,7 +7,6 @@ router.post('/', postController.createPost);
 
 // 채용공고 수정
 router.patch('/:postId', postController.updatePost);
-// router.put('/:postId', postController.updatePost);
 
 // 채용공고 삭제
 router.delete('/:postId', postController.deletePost);
@@ -16,6 +15,6 @@ router.delete('/:postId', postController.deletePost);
 router.get('/', postController.getPosts);
 
 // 채용공고 상세
-router.get('/detail/:postId', postController.getPostDetail);
+router.get('/:postId', postController.getPostDetail);
 
 module.exports = router;

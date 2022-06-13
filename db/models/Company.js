@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
   const Companies = sequelize.define("Companies", {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
       comment: "회사 id",
     },

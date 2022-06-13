@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
   const Posts = sequelize.define("Posts", {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
       comment: "채용공고 id",
     },

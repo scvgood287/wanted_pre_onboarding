@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
   const Applies = sequelize.define("Applies", {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
       comment: "지원내역 id",
     }

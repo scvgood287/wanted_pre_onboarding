@@ -13,11 +13,11 @@ const applyPost = async (req, res) => {
   });
 
   if (apply === null) {
-    const createdApply = await Applies.create(body);
+    await Applies.create(body);
 
-    res.send(createdApply);
+    res.status(201);
   } else {
-    res.send("You Already Applied");
+    res.status(400).json({ message: "You Already Applied" });
   };
 };
 

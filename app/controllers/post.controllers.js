@@ -6,50 +6,54 @@ const { Posts, Companies } = models;
 const createPost = async (req, res) => {
   const { body, } = req;
 
-  const createdPost = await Posts.create(body);
+  await Posts.create(body);
 
-  res.send(createdPost);
+  res.status(201);
 };
 
 // 채용공고 수정
 const updatePost = async (req, res) => {
   const { body, params: { postId }, } = req;
 
-  const updatedPost = await Posts.update(body, {
-    where: {
-      id: postId,
-    },
-  });
-
-  res.send(updatedPost);
+  if (body.hasOwnProperty('id') || body.hasOwnProperty('company_id')) {
+    res.status(403).json({ message: "You can't change id or company_id" });
+  } else {
+    await Posts.update(body, {
+      where: {
+        id: postId,
+      },
+    });
+  
+    res.status(204);
+  };
 };
 
 // 채용공고 삭제
 const deletePost = async (req, res) => {
   const { params: { postId }, } = req;
 
-  const deletedPost = await Posts.destroy({
+  await Posts.destroy({
     where: {
       id: postId,
     },
   });
 
-  res.send(deletedPost);
+  res.status(204);
 };
 
 // 채용공고 목록 및 검색
 const getPosts = async (req, res) => {
   const { query: { search }, } = req;
 
-  let posts = await Posts.findAll({
+  const posts = await Posts.findAll({
     attributes: {
-      exclude: ["details", "company_id", "createAt", "updatedAt", "deletedAt"],
+      exclude: ["details", "company_id", "createdAt", "updatedAt", "deletedAt"],
     },
     include: [Companies],
   });
 
-  posts = posts.dataValues.map(({ Companies, ...postInfo }) => {
-    const { id, ...companyInfo } = Companies;
+  let postsInfo = posts.map(({ dataValues: { Company, ...postInfo } }) => {
+    const { id, createdAt, updatedAt, deletedAt, ...companyInfo } = Company.dataValues;
     
     return {
       ...companyInfo,
@@ -58,38 +62,37 @@ const getPosts = async (req, res) => {
   });
 
   if (search) {
-    posts = posts.filter(post => Object.values(post).some(value => String(value).includes(search)));
+    postsInfo = postsInfo.filter(post => Object.values(post).some(value => String(value).includes(search)));
   };
 
-  res.send(posts);
+  res.json(postsInfo);
 };
 
 // 채용공고 상세
 const getPostDetail = async (req, res) => {
-  const { params: { postId }, } = req;
+  let { params: { postId }, } = req;
+  postId = Number(postId);
 
-  const { dataValues: { Companies, ...postInfo } } = await Posts.findByPk(postId, {
+  const { dataValues: { Company, ...postInfo } } = await Posts.findByPk(postId, {
     attributes: {
-      exclude: ["company_id", "createAt", "updatedAt", "deletedAt"],
+      exclude: ["company_id", "createdAt", "updatedAt", "deletedAt"],
     },
     include: [Companies],
   });
 
-  const { id: companyId, ...companyInfo } = Companies;
+  const { id: companyId, createdAt, updatedAt, deletedAt, ...companyInfo } = Company.dataValues;
 
   const otherPosts = await Posts.findAll({
     where: {
       company_id: companyId,
     },
-    attributes: {
-      include: ["id"],
-    },
+    attributes: ["id"],
   });
 
-  res.send({
+  res.json({
     ...companyInfo,
     ...postInfo,
-    otherPosts: otherPosts.dataValues.map(({ id }) => id).filter(id => id !== postId),
+    otherPosts: otherPosts.map(({ dataValues: { id }}) => id).filter(id => id !== postId),
   });
 };
 
