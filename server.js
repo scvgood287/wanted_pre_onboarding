@@ -17,7 +17,7 @@ app.use('/post', postRoutes);
 app.use('/apply', applyRoutes);
 
 db.sequelize
-  .sync({ force: false })
+  .sync({ force: true }) // 개발 끝나면 false
   .then(() => {
     console.log('db connected');
   })

@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const Applies = sequelize.define("Applies", {
-    _id: {
+    id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
@@ -15,14 +15,16 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Applies.associate = (models) => {
-    Applies.belongsTo(models.Posts, {
+    const { Posts, Users, } = models;
+
+    Applies.belongsTo(Posts, {
       foreignKey: "post_id",
-      sourceKey: "_id",
+      sourceKey: "id",
     });
 
-    Applies.belongsTo(models.Users, {
+    Applies.belongsTo(Users, {
       foreignKey: "user_id",
-      sourceKey: "_id",
+      sourceKey: "id",
     });
   };
   

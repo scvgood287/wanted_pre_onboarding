@@ -1,11 +1,26 @@
 module.exports = (sequelize, DataTypes) => {
   const Companies = sequelize.define("Companies", {
-    _id: {
+    id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
       comment: "회사 id",
-    }
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      comment: "회사명",
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      comment: "국가",
+    },
+    region: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      comment: "지역",
+    },
   }, {
     charset: "utf8", // 한국어 설정
     collate: "utf8_general_ci", // 한국어 설정
@@ -15,9 +30,11 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Companies.associate = (models) => {
-    Companies.hasMany(models.Posts, {
+    const { Posts, } = models;
+
+    Companies.hasMany(Posts, {
       foreignKey: "company_id",
-      sourceKey: "_id",
+      sourceKey: "id",
     });
   };
   

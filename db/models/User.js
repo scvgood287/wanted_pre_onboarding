@@ -1,11 +1,24 @@
 module.exports = (sequelize, DataTypes) => {
   const Users = sequelize.define("Users", {
-    _id: {
+    id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
       comment: "사용자 id",
-    }
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      comment: "사용자명",
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isEmail: true,
+      },
+      comment: "사용자 이메일",
+    },
   }, {
     charset: "utf8", // 한국어 설정
     collate: "utf8_general_ci", // 한국어 설정
@@ -15,9 +28,11 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Users.associate = (models) => {
-    Users.hasOne(models.Applies, {
+    const { Applies, } = models;
+
+    Users.hasOne(Applies, {
       foreignKey: "user_id",
-      sourceKey: "_id",
+      sourceKey: "id",
     });
   };
   

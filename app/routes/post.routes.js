@@ -16,6 +16,6 @@ router.delete('/:postId', postController.deletePost);
 router.get('/', postController.getPosts);
 
 // 채용공고 상세
-router.get('/:postId', postController.getPostDetail);
+router.get('/detail/:postId', postController.getPostDetail);
 
 module.exports = router;
