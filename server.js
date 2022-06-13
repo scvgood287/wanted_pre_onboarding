@@ -4,8 +4,10 @@ const db = require('./db/models');
 const healthCheck = require('./app/routes');
 const postRoutes = require('./app/routes/post.routes');
 const applyRoutes = require('./app/routes/apply.routes');
+const utils = require('./utils');
 
 const app = express();
+const { createInitialData } = utils;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -19,11 +21,17 @@ app.use('/apply', applyRoutes);
 db.sequelize
   .sync({ force: true }) // 개발 끝나면 false
   .then(() => {
-    console.log('db connected');
+    createInitialData()
+      .then(() => console.log('db connected'))
+      .catch((err) => {
+        throw new Error(err);
+      });
   })
   .catch((err) => {
     console.error(err);
   });
+
+
 
 const PORT = process.env.PORT || 8081;
 
