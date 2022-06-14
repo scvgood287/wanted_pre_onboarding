@@ -1,5 +1,4 @@
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 const postController = require('../controllers/post.controllers');
 
 // 채용공고 등록
@@ -16,5 +15,8 @@ router.get('/', postController.getPosts);
 
 // 채용공고 상세
 router.get('/:postId', postController.getPostDetail);
+
+// 채용공고 지원
+router.post('/apply', postController.applyPost);
 
 module.exports = router;

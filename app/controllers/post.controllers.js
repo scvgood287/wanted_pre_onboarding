@@ -1,12 +1,11 @@
-const models = require('../../db/models');
-
-const { Posts, Companies } = models;
+const { Companies } = require('../../db/models');
+const { postServices, applyServices } = require('../services');
 
 // 채용공고 등록
 const createPost = async (req, res) => {
   const { body, } = req;
 
-  await Posts.create(body);
+  await postServices.create(body);
 
   res.status(201);
 };
@@ -18,7 +17,7 @@ const updatePost = async (req, res) => {
   if (body.hasOwnProperty('id') || body.hasOwnProperty('company_id')) {
     res.status(403).json({ message: "You can't change id or company_id" });
   } else {
-    await Posts.update(body, {
+    await postServices.update(body, {
       where: {
         id: postId,
       },
@@ -32,7 +31,7 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
   const { params: { postId }, } = req;
 
-  await Posts.destroy({
+  await postServices.destroy({
     where: {
       id: postId,
     },
@@ -45,14 +44,14 @@ const deletePost = async (req, res) => {
 const getPosts = async (req, res) => {
   const { query: { search }, } = req;
 
-  const posts = await Posts.findAll({
+  const posts = await postServices.findAll({
     attributes: {
       exclude: ["details", "company_id", "createdAt", "updatedAt", "deletedAt"],
     },
     include: [Companies],
   });
 
-  let postsInfo = posts.map(({ dataValues: { Company, ...postInfo } }) => {
+  const postsInfo = posts.map(({ dataValues: { Company, ...postInfo } }) => {
     const { id, createdAt, updatedAt, deletedAt, ...companyInfo } = Company.dataValues;
     
     return {
@@ -61,11 +60,7 @@ const getPosts = async (req, res) => {
     };
   });
 
-  if (search) {
-    postsInfo = postsInfo.filter(post => Object.values(post).some(value => String(value).includes(search)));
-  };
-
-  res.json(postsInfo);
+  res.json(search ? postsInfo.filter(post => Object.values(post).some(value => String(value).includes(search))) : postsInfo);
 };
 
 // 채용공고 상세
@@ -73,7 +68,7 @@ const getPostDetail = async (req, res) => {
   let { params: { postId }, } = req;
   postId = Number(postId);
 
-  const { dataValues: { Company, ...postInfo } } = await Posts.findByPk(postId, {
+  const { dataValues: { Company, ...postInfo } } = await postServices.findByPk(postId, {
     attributes: {
       exclude: ["company_id", "createdAt", "updatedAt", "deletedAt"],
     },
@@ -82,7 +77,7 @@ const getPostDetail = async (req, res) => {
 
   const { id: companyId, createdAt, updatedAt, deletedAt, ...companyInfo } = Company.dataValues;
 
-  const otherPosts = await Posts.findAll({
+  const otherPosts = await postServices.findAll({
     where: {
       company_id: companyId,
     },
@@ -96,10 +91,30 @@ const getPostDetail = async (req, res) => {
   });
 };
 
+// 채용공고 지원
+const applyPost = async (req, res) => {
+  const { body } = req;
+
+  const apply = await applyServices.findOne({
+    where: {
+      user_id: body.user_id
+    },
+  });
+
+  if (apply === null) {
+    await applyServices.create(body);
+
+    res.status(201);
+  } else {
+    res.status(400).json({ message: "You Already Applied" });
+  };
+};
+
 module.exports = {
   createPost,
   updatePost,
   deletePost,
   getPosts,
   getPostDetail,
+  applyPost,
 };

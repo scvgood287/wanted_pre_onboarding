@@ -1,9 +1,7 @@
-const models = require('../db/models');
+const { Companies, Users } = require('../db/models');
 
 const createInitialData = async () => {
-  const { Companies, Users } = models;
-
-  await Companies.bulkCreate([
+  const companies = await Companies.bulkCreate([
     {
       name: "원티드랩",
       country: "한국",
@@ -26,7 +24,7 @@ const createInitialData = async () => {
     },
   ]);
 
-  await Users.bulkCreate([
+  const users = await Users.bulkCreate([
     {
       name: "김지유",
       email: "kgeeeu@gmail.com"
@@ -40,6 +38,11 @@ const createInitialData = async () => {
       email: "hunni-devteam@gmail.com"
     },
   ]);
+
+  return {
+    companies,
+    users
+  };
 };
 
 module.exports = {
