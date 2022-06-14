@@ -5,9 +5,9 @@ const { postServices, applyServices } = require('../services');
 const createPost = async (req, res) => {
   const { body, } = req;
 
-  await postServices.create(body);
+  const post = await postServices.create(body);
 
-  res.status(201);
+  res.status(201).json(post);
 };
 
 // 채용공고 수정
@@ -60,7 +60,7 @@ const getPosts = async (req, res) => {
     };
   });
 
-  res.json(search ? postsInfo.filter(post => Object.values(post).some(value => String(value).includes(search))) : postsInfo);
+  res.status(200).json(search ? postsInfo.filter(post => Object.values(post).some(value => String(value).includes(search))) : postsInfo);
 };
 
 // 채용공고 상세
@@ -84,7 +84,7 @@ const getPostDetail = async (req, res) => {
     attributes: ["id"],
   });
 
-  res.json({
+  res.status(200).json({
     ...companyInfo,
     ...postInfo,
     otherPosts: otherPosts.map(({ dataValues: { id }}) => id).filter(id => id !== postId),
@@ -102,9 +102,9 @@ const applyPost = async (req, res) => {
   });
 
   if (apply === null) {
-    await applyServices.create(body);
+    const apply = await applyServices.create(body);
 
-    res.status(201);
+    res.status(201).json(apply);
   } else {
     res.status(400).json({ message: "You Already Applied" });
   };
