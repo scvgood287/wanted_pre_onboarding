@@ -224,3 +224,15 @@
     사용자가 지원을 한 적 있는 지 검색,  
     내역이 있다면 400 Bad Request 와 함께 경고 메시지를 넘기고,  
     없다면 201 created 와 함께 생성된 지원내역을 넘겨줬다.
+## 부족한 점
+지금까진 NoSQL DB 인 MongoDB 만을 사용해왔기 때문에  
+RDBMS 와 Sequelize 를 처음 사용해봤다.  
+마침 공부해야겠다는 생각이 있었기에 재미는 있었으나 미숙한 부분이 있었다.  
+예를 들어 요구 사항 4-2 에서 검색 키워드를 ORM 선에서 처리 가능할 법도 한데,  
+그냥 Javascript 문법으로 해결하였다.
+```js
+search ? postsInfo.filter(post => Object.values(post).some(value => String(value).includes(search))) : postsInfo
+```
+
+
+추후 도입할 수도 있지만 현재까지는 Typescript 도입을 하지 않은 것도 아쉬운 점인 것 같다.
